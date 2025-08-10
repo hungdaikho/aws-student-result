@@ -1,34 +1,31 @@
 import { PrismaClient } from '@prisma/client'
 
-const globalForPrisma = globalThis as unknown as {
-    prisma: PrismaClient | undefined
-}
+// We keep a global reference in dev to avoid exhausting connections on hot reload.
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefined }
 
-// Ensure DATABASE_URL is available
-if (!process.env.DATABASE_URL) {
-    throw new Error('DATABASE_URL environment variable is not set')
-}
-
-export const prisma =
-    globalForPrisma.prisma ??
-    new PrismaClient({
-        log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'], // Removed 'query' for better performance
-        datasources: {
-            db: {
-                url: process.env.DATABASE_URL
-            }
-        },
-        // Performance optimizations
+// Lazily create a Prisma client ONLY if DATABASE_URL is present. This prevents
+// Next.js build (page data collection) from crashing in environments where the
+// legacy Postgres database isn't configured (e.g. Dynamo-only deployments).
+export const prisma: PrismaClient | undefined = (() => {
+    if (!process.env.DATABASE_URL) {
+        if (process.env.NODE_ENV === 'development') {
+            console.warn('⚠️  DATABASE_URL not set – Prisma client disabled for this build.')
+        }
+        return undefined
+    }
+    const client = globalForPrisma.prisma ?? new PrismaClient({
+        log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+        datasources: { db: { url: process.env.DATABASE_URL } },
+        // Internal tuning (safe to leave as-is)
+        // @ts-expect-error __internal is not officially typed
         __internal: {
             engine: {
-                // Optimized connection settings
-                connectionLimit: 5, // Reduced for better performance
-                queryTimeout: 15000, // Reduced timeout
-                connectionTimeout: 5000, // Reduced timeout
-                // Connection pooling with optimized settings
+                connectionLimit: 5,
+                queryTimeout: 15000,
+                connectionTimeout: 5000,
                 pool: {
                     min: 1,
-                    max: 5, // Reduced max connections
+                    max: 5,
                     acquireTimeoutMillis: 15000,
                     createTimeoutMillis: 15000,
                     destroyTimeoutMillis: 3000,
@@ -39,26 +36,37 @@ export const prisma =
             }
         }
     })
+    if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = client
+    return client
+})()
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+// Helper to explicitly require Prisma when an endpoint truly depends on it.
+export function requirePrisma(): PrismaClient {
+    if (!prisma) {
+        throw new Error('DATABASE_URL not configured – this endpoint requires PostgreSQL.')
+    }
+    return prisma
+}
 
 // Graceful shutdown with timeout
-process.on('beforeExit', async () => {
-    try {
-        await Promise.race([
-            prisma.$disconnect(),
-            new Promise(resolve => setTimeout(resolve, 5000)) // 5 second timeout
-        ])
-    } catch (error) {
-        console.error('Error disconnecting Prisma:', error)
-    }
-})
+if (prisma) {
+    process.on('beforeExit', async () => {
+        try {
+            await Promise.race([
+                prisma.$disconnect(),
+                new Promise(resolve => setTimeout(resolve, 5000))
+            ])
+        } catch (error) {
+            console.error('Error disconnecting Prisma:', error)
+        }
+    })
+}
 
 // Handle uncaught exceptions
 process.on('uncaughtException', async (error) => {
     console.error('Uncaught Exception:', error)
     try {
-        await prisma.$disconnect()
+        if (prisma) await prisma.$disconnect()
     } catch (disconnectError) {
         console.error('Error disconnecting Prisma on uncaught exception:', disconnectError)
     }

@@ -15,6 +15,13 @@ export async function GET() {
             })
         }
 
+        if (!prisma) {
+            return NextResponse.json({
+                error: "Prisma client not initialized (missing DATABASE_URL)",
+                env: process.env.NODE_ENV
+            }, { status: 503 })
+        }
+
         // Test basic connection
         await prisma.$connect()
         console.log("✅ Database connection successful")
@@ -77,6 +84,8 @@ export async function GET() {
             serverTime: new Date().toISOString()
         }, { status: 500 })
     } finally {
-        await prisma.$disconnect()
+        if (prisma) {
+            await prisma.$disconnect()
+        }
     }
 }

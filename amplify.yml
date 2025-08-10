@@ -1,0 +1,23 @@
+version: 1
+applications:
+  - appRoot: .
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - corepack enable
+            - pnpm install --frozen-lockfile || pnpm install
+        build:
+          commands:
+            # Build en mode standalone pour un zip léger
+            - set STANDALONE=true
+            - pnpm run build
+      artifacts:
+        baseDirectory: .next
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**
+          - .next/cache/**
+    # Si besoin d'un backend serverless séparé, on peut ajouter une section backend plus tard

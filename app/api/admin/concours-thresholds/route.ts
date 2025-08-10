@@ -12,6 +12,12 @@ export async function GET(request: NextRequest) {
       whereClause.year = parseInt(year)
     }
 
+    if (!prisma) {
+      return NextResponse.json(
+        { error: 'Database not configured (missing DATABASE_URL)' },
+        { status: 503 }
+      )
+    }
     const thresholds = await prisma.concoursThreshold.findMany({
       where: whereClause,
       orderBy: [
@@ -47,6 +53,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Create or update threshold
+    if (!prisma) {
+      return NextResponse.json(
+        { error: 'Database not configured (missing DATABASE_URL)' },
+        { status: 503 }
+      )
+    }
     const thresholdData = await prisma.concoursThreshold.upsert({
       where: {
         year_examType_wilaya: {
@@ -94,6 +106,12 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
+    if (!prisma) {
+      return NextResponse.json(
+        { error: 'Database not configured (missing DATABASE_URL)' },
+        { status: 503 }
+      )
+    }
     await prisma.concoursThreshold.delete({
       where: { id }
     })

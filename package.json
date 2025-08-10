@@ -6,13 +6,18 @@
     "node": ">=18.18.0"
   },
   "scripts": {
-    "build": "next build",
+  "build": "next build",
+  "build:standalone": "cross-env STANDALONE=true next build",
     "dev": "next dev",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "start": "next start",
     "deploy:lambda": "serverless deploy",
-    "migrate:dynamo": "ts-node scripts/migrate-to-dynamo.ts"
+    "migrate:dynamo": "ts-node scripts/migrate-to-dynamo.ts",
+  "export": "next export",
+  "package:zip": "node scripts/package-standalone-zip.cjs"
+  ,"build:static": "cross-env EXPORT_STATIC=true next build && next export"
+  ,"package:zip:static": "node scripts/package-static-zip.cjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -70,11 +75,13 @@
     "zod": "^3.24.1",
     "@aws-sdk/client-dynamodb": "^3.614.0",
     "@aws-sdk/lib-dynamodb": "^3.614.0"
+  ,"archiver":"^7.0.1"
   },
   "devDependencies": {
     "@types/node": "^22",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+  "cross-env": "^7.0.3",
     "dotenv-cli": "^10.0.0",
     "postcss": "^8.5",
     "prisma": "6.13.0",

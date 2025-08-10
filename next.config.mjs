@@ -6,7 +6,10 @@ const nextConfig = {
   },
 
   // Configuration pour la production
-  // output: process.env.NODE_ENV === 'production' ? 'standalone' : undefined,
+  // Active le mode standalone uniquement quand demandé (pour empaquetage zip / déploiement custom)
+  output: process.env.EXPORT_STATIC === 'true'
+    ? 'export'
+    : (process.env.STANDALONE === 'true' ? 'standalone' : undefined),
 
   // Optimisation des images
   images: {
