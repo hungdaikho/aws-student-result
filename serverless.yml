@@ -3,7 +3,7 @@ service: student-result-app
 frameworkVersion: '3'
 
 plugins:
-  - serverless-nextjs
+  - serverless-next.js
 
 custom:
   nextConfigDir: ./
