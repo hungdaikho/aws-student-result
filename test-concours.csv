@@ -1,0 +1,11 @@
+matricule,nom_complet,ecole,etablissement,moyenne,rang,admis,decision_text,section,wilaya,year,examType
+123456789,Ahmed Ben Ali,Lycée Mohamed V,Lycée Mohamed V,15.5,1,true,Admis,CONCOURS,Alger,2025,CONCOURS
+123456790,Fatima Bensalem,Lycée Ibn Khaldoun,Lycée Ibn Khaldoun,14.8,2,true,Admis,CONCOURS,Oran,2025,CONCOURS
+123456791,Mohamed Cherif,Lycée Emir Abdelkader,Lycée Emir Abdelkader,14.2,3,true,Admis,CONCOURS,Constantine,2025,CONCOURS
+123456792,Amina Zidane,Lycée Malek Bennabi,Lycée Malek Bennabi,13.9,4,true,Admis,CONCOURS,Annaba,2025,CONCOURS
+123456793,Karim Messaoudi,Lycée Ibn Sina,Lycée Ibn Sina,13.5,5,true,Admis,CONCOURS,Blida,2025,CONCOURS
+123456794,Sara Hamidi,Lycée Ibn Rochd,Lycée Ibn Rochd,13.1,6,true,Admis,CONCOURS,Tlemcen,2025,CONCOURS
+123456795,Youssef Benrahma,Lycée Ibn Badis,Lycée Ibn Badis,12.8,7,true,Admis,CONCOURS,Setif,2025,CONCOURS
+123456796,Nadia Boudiaf,Lycée Ibn Khaldoun,Lycée Ibn Khaldoun,12.5,8,true,Admis,CONCOURS,Oran,2025,CONCOURS
+123456797,Samir Benatia,Lycée Mohamed V,Lycée Mohamed V,12.2,9,true,Admis,CONCOURS,Alger,2025,CONCOURS
+123456798,Leila Mansouri,Lycée Emir Abdelkader,Lycée Emir Abdelkader,11.9,10,true,Admis,CONCOURS,Constantine,2025,CONCOURS

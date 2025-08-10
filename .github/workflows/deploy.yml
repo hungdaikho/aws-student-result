@@ -1,0 +1,97 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run tests
+      run: npm test
+      
+    - name: Build application
+      run: npm run build
+      
+    - name: Deploy to VPS
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USERNAME }}
+        key: ${{ secrets.VPS_SSH_KEY }}
+        port: ${{ secrets.VPS_PORT || 22 }}
+        script: |
+          # Navigate to application directory
+          cd /var/www/student-result-app
+          
+          # Pull latest changes
+          git fetch origin
+          git reset --hard origin/main
+          
+          # Install dependencies
+          npm ci --only=production
+          
+          # Generate Prisma client
+          npx prisma generate
+          
+          # Run database migrations
+          npx prisma migrate deploy
+          
+          # Build application
+          npm run build
+          
+          # Set proper permissions
+          sudo chown -R $USER:www-data /var/www/student-result-app
+          sudo chmod -R 755 /var/www/student-result-app
+          sudo chmod -R 775 /var/www/student-result-app/.next
+          
+          # Restart PM2 process
+          pm2 restart student-result-app || pm2 start ecosystem.config.js
+          
+          # Save PM2 configuration
+          pm2 save
+          
+          # Check Nginx configuration
+          if sudo nginx -t; then
+            sudo systemctl reload nginx
+            echo "Nginx reloaded successfully"
+          else
+            echo "Nginx configuration error"
+            exit 1
+          fi
+          
+          # Health check
+          sleep 5
+          if curl -f http://localhost:3000/health > /dev/null 2>&1; then
+            echo "Deployment successful - Application is healthy"
+          else
+            echo "Health check failed"
+            pm2 logs student-result-app --lines 20
+            exit 1
+          fi
+          
+    - name: Notify deployment status
+      if: always()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        channel: '#deployments'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+

@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id                  String   @id @default(cuid())
+  matricule           String   // Removed @unique here since we have composite unique below
+  nom_complet         String
+  ecole               String
+  etablissement       String
+  moyenne             Float
+  rang                Int
+  admis               Boolean
+  decision_text       String
+  section             String
+  wilaya              String?
+  moughataa           String?  // For CONCOURS exams - district/center
+  rang_etablissement  Int?
+  year                Int
+  examType            String
+  sessionType         SessionType? // For BAC exams
+  lieu_nais           String?
+  date_naiss          String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@unique([matricule, year, examType, sessionType])
+  @@index([year, examType])
+  @@index([wilaya])
+  @@index([moughataa])
+  @@index([ecole])
+  @@index([etablissement])
+  @@index([rang])
+  @@map("students")
+}
+
+model DataUpload {
+  id            String   @id @default(cuid())
+  year          Int
+  examType      String
+  sessionType   SessionType? // For BAC exams
+  fileName      String
+  studentCount  Int
+  uploadedAt    DateTime @default(now())
+  
+  @@unique([year, examType, sessionType])
+  @@map("data_uploads")
+}
+
+model ExamType {
+  id          String   @id @default(cuid())
+  name        String
+  code        String   // BAC, BREVET, CONCOURS, OTHER
+  year        Int      // Year for the exam
+  description String?
+  sessionType SessionType? // For BAC exams
+  hasSections Boolean  @default(false)
+  hasDecision Boolean  @default(true)
+  requiresThreshold Boolean @default(false)
+  isActive    Boolean  @default(true)
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([name, year, sessionType])
+  @@unique([code, year, sessionType])
+  @@map("exam_types")
+}
+
+model SliderImage {
+  id          String   @id @default(cuid())
+  title       String?
+  description String?
+  imageUrl    String
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("slider_images")
+}
+
+
+
+// Concours threshold management
+model ConcoursThreshold {
+  id          String   @id @default(cuid())
+  year        Int
+  examType    String   // CONCOURS
+  wilaya      String?  // null for global threshold
+  threshold   Float
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([year, examType, wilaya])
+  @@index([year, examType])
+  @@index([wilaya])
+  @@map("concours_thresholds")
+}
+
+enum ExamTypeEnum {
+  BAC
+  BREVET
+  CONCOURS
+  EXCELLENCE
+  OTHER
+}
+
+enum SessionType {
+  NORMALE
+  COMPLEMENTAIRE
+}

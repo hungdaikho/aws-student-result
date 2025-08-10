@@ -1,0 +1,13 @@
+matricule,nom_complet,ecole,etablissement,moyenne,rang,admis,decision_text,section,wilaya,year,examType
+123456799,Ahmed Excellence,Lycée Excellence 1,Lycée Excellence 1,16.5,1,true,Admis,EXCELLENCE,Alger,2025,EXCELLENCE
+123456800,Fatima Excellence,Lycée Excellence 2,Lycée Excellence 2,15.8,2,true,Admis,EXCELLENCE,Oran,2025,EXCELLENCE
+123456801,Mohamed Excellence,Lycée Excellence 3,Lycée Excellence 3,15.2,3,true,Admis,EXCELLENCE,Constantine,2025,EXCELLENCE
+123456802,Amina Excellence,Lycée Excellence 4,Lycée Excellence 4,14.9,4,true,Admis,EXCELLENCE,Annaba,2025,EXCELLENCE
+123456803,Karim Excellence,Lycée Excellence 5,Lycée Excellence 5,14.5,5,true,Admis,EXCELLENCE,Blida,2025,EXCELLENCE
+123456804,Sara Excellence,Lycée Excellence 6,Lycée Excellence 6,14.1,6,true,Admis,EXCELLENCE,Tlemcen,2025,EXCELLENCE
+123456805,Youssef Excellence,Lycée Excellence 7,Lycée Excellence 7,13.8,7,true,Admis,EXCELLENCE,Setif,2025,EXCELLENCE
+123456806,Nadia Excellence,Lycée Excellence 8,Lycée Excellence 8,13.5,8,true,Admis,EXCELLENCE,Oran,2025,EXCELLENCE
+123456807,Samir Excellence,Lycée Excellence 9,Lycée Excellence 9,13.2,9,true,Admis,EXCELLENCE,Alger,2025,EXCELLENCE
+123456808,Leila Excellence,Lycée Excellence 10,Lycée Excellence 10,12.9,10,true,Admis,EXCELLENCE,Constantine,2025,EXCELLENCE
+
+
