@@ -6,7 +6,9 @@ applications:
         preBuild:
           commands:
             - corepack enable
-            - pnpm install --frozen-lockfile || pnpm install
+            # Use install without --frozen-lockfile because lockfile may change when adding serverless-related deps.
+            # After updating pnpm-lock.yaml locally (pnpm install & commit), you can re-enable --frozen-lockfile for stricter CI.
+            - pnpm install
         build:
           commands:
             # Build en mode standalone pour un zip léger
